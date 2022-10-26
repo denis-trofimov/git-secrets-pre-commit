@@ -1,11 +1,13 @@
-FROM alpine:3.10
+FROM alpine:latest
 
-RUN apk --update add bash git less openssh make && \
-    apk add --upgrade grep && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm /var/cache/apk/*
+RUN apk --update add --no-cache bash git make
 
 RUN git clone https://github.com/awslabs/git-secrets.git && \
     cd git-secrets && \
     make install && \
     git secrets --register-aws --global
+
+# Best Practices for Non-root User
+# ref: https://github.com/mhart/alpine-node/issues/48
+RUN addgroup -S app && adduser -S -G app app
+USER app
